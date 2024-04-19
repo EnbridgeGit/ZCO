@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_PROG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROGDIR>
+    <NAME>ZKORR007</NAME>
+    <SUBC>1</SUBC>
+    <APPL>K</APPL>
+    <RLOAD>E</RLOAD>
+    <FIXPT>X</FIXPT>
+   </PROGDIR>
+   <TPOOL>
+    <item>
+     <ID>I</ID>
+     <KEY>001</KEY>
+     <ENTRY>Copy Rules from</ENTRY>
+     <LENGTH>19</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>002</KEY>
+     <ENTRY>Copy Rules to</ENTRY>
+     <LENGTH>20</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>003</KEY>
+     <ENTRY>Other parameters</ENTRY>
+     <LENGTH>20</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>A01</KEY>
+     <ENTRY>Plan Rule</ENTRY>
+     <LENGTH>10</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>A02</KEY>
+     <ENTRY>Act. Rule</ENTRY>
+     <LENGTH>9</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>VAR</KEY>
+     <ENTRY>Select Selection Variant</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>R</ID>
+     <ENTRY>Create Plan Rules As a Copy of Actual or Plan Rules</ENTRY>
+     <LENGTH>51</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>ACTUAL</KEY>
+     <ENTRY>Actual rules.</ENTRY>
+     <LENGTH>21</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>FUL</KEY>
+     <ENTRY>FUL rules</ENTRY>
+     <LENGTH>17</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>GJAHR</KEY>
+     <ENTRY>Settlement year</ENTRY>
+     <LENGTH>23</LENGTH>
+     <SPLIT>D</SPLIT>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>PLAN</KEY>
+     <ENTRY>Plan rules</ENTRY>
+     <LENGTH>18</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>TESTRUN</KEY>
+     <ENTRY>Test run</ENTRY>
+     <LENGTH>16</LENGTH>
+     <SPLIT>D</SPLIT>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>VARIANT</KEY>
+     <ENTRY>Selection variant</ENTRY>
+     <LENGTH>25</LENGTH>
+     <SPLIT>D</SPLIT>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>VERSN_FR</KEY>
+     <ENTRY>Version</ENTRY>
+     <LENGTH>15</LENGTH>
+     <SPLIT>D</SPLIT>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>VERSN_TO</KEY>
+     <ENTRY>Version</ENTRY>
+     <LENGTH>15</LENGTH>
+     <SPLIT>D</SPLIT>
+    </item>
+   </TPOOL>
+   <LONGTEXTS>
+    <item>
+     <DOKIL>
+      <ID>RE</ID>
+      <OBJECT>ZKORR007</OBJECT>
+      <LANGU>E</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0001</VERSION>
+      <MASTERLANG>X</MASTERLANG>
+      <TXTLINES>00079</TXTLINES>
+      <DOKSTATE>R</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZKORR007</TDNAME>
+      <TDID>RE</TDID>
+      <TDSPRAS>E</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00001</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;TITLE&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>The following doc describes how you can copy plan rules for internal</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>orders with this report</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;PURPOSE&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>The report creates plan rules in a certain target version with</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>reference.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;INTEGRATION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>In R/3 the system automatically copies plan rules form actual rules</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>with the first plan settlement. This function and its restrictions are</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>described in note  207722 - For the planned settlement there are</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>special settlement rules. Up to and including Release 4.0, one</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>settlement rule applied to all plan versions. As of Release 4.5 there</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>is one settlement rule per plan version; that is, you have to maintain</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>one settlement rule per plan version to be settled. For the automatic</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>generation of settlement rules there is only one option: If with the</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>first planned settlement of a version there is no settlement rule for</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>this version, the system checks whether a planned settlement rule for</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>this plan version can be generated from the valid actual rule. The</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>system thus checks, whether a valid actual settlement rule exists with</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>settlement type PER or VOR (releases prior to Release 4.5 only PER) and</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>receiver, cost center, business process, order, WBS</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>element, profitability segment (releases prior to Release 4.5 only cost</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>center and business process). If there is a rule, it is copied.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>Otherwise, the system generates error message KD265.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>Negative list:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The following restrictions apply for the automatic generation of the</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>settlement rule for the first planned settlement of a version:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,Actual rules with settlement type GES cannot be copied to PER plan</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>rules.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,Plan rules cannot be copied from other plan versions.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The system does not generate a plan rule if there is already a plan</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>rule for the affected version which, however, is no longer valid. (This</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>restriction is removed with Release 4.6C.)</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;PREREQUISITES&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>The restrictions listed in the negative list above are removed with</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>this report .</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;FEATURES&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>         The report creates plan rules in a certain target version with</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>reference.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>You can choose, if the reference should be plan rules of a different</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>version of actual rules. If you choose actual rules, you can choose if</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>the system should copy PER-rules (flag FUL-rules blanc) or FUL-rules</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>(flag FUL-rules = X).</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The settlement year determines the year for the reference rule, i.e.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>it determines in which year the reference should be looked for, i.e.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>only rules valid in the settlement year are copied. If a rule exists</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>in the target version, which is valid for the whole settlement year,</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>the report does not do anything. Please note that the validity of the</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>new rule is limited if a plan rule exists in the target version and</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>this plan rule is valid for part of the validity of the reference rule</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U2</TDFORMAT>
+       <TDLINE>&amp;SELECTION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>The selection variant determines the selected objects. Create a</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>selection variant in transaction KO9G (Plan settlement internal orders)</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>or CJ9G (Plan settlement projects) if necessary.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U2</TDFORMAT>
+       <TDLINE>&amp;STANDARD_VARIANTS&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U2</TDFORMAT>
+       <TDLINE>&amp;OUTPUT&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;ACTIVITIES&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;EXAMPLE&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Examples for the copy function:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>1.,, Copy plan rules from version 000 to version 003 in 2001 without</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>rule in version 003:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The order may have the following plan rules:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 000 to cost center 4710 valid 1/1998-12/1998</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 000 to cost center 4711 valid 1/1999-12/2002</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The report results in creating the following rule:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 003 to cost center 4711 valid 1/1999-12/2002</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>2.,,Copy plan rules from version 000 to version 003 in 2001 with plan</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>rule in 2000:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The order may have the following plan rules:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 000 to cost center 4711 valid 1/1999-12/2002</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 003 to cost center 4712 valid 1/1999-12/1999</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The report results in creating the following rule:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 003 to cost center 4711 valid 1/2000-12/2002</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>3.,,Copy plan rules from version 000 to version 003 in 2001 with plan</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>rule in 2001:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The order may have the following plan rules:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 000 to cost center 4711 valid 1/1999-12/2002</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 003 to cost center 4712 valid 1/1999- 6/2001</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The report results in creating the following rule:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 003 to cost center 4711 valid 7/2001-12/2002</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>4.,,Copy plan rules from version 000 to version 003 in 2001 with plan</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>rule in 2001:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The order may have the following plan rules:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 000 to cost center 4711 valid 1/1999-12/2002</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>·,,100% PER in version 003 to cost center 4712 valid 1/1999- 12/2001</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+       <TDLINE>The report does not do anything.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>*</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+     </LINES>
+    </item>
+   </LONGTEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,763 @@
+REPORT ZKAPR001 LINE-SIZE 132 LINE-COUNT 59.
+********************************************************************
+*      Owner: Centra/Union Gas Ltd. - BIS                          *
+* Programmer: Yaxin Veliz - OmniLogic Systems Group (Toronto)      *
+*       Date: October 8th, 1996                                    *
+* Request ID: DRFI0088                                             *
+*                                                                  *
+* The following program will generate a Labor Cost Centre Report   *
+* that will produce Actual, Plan, Variance, and Quantity in Hours  *
+* financial information.                                           *
+********************************************************************
+
+TABLES:
+    AUAA,            "Settlement Document: Receiver Segment
+    AUAS,            "Settlement Document: Totals Segment
+    BSEG,            "Accounting Document Segment
+    BSIS,            "Accounting: Secondary Index for G/L Accounts
+    COEP,            "CO Object: Period-Related Line Items
+    COSP,            "CO Object: Cost Totals - External Postings
+    COSS,            "CO Object: Cost Totals - Internal Postings
+    CSKB,            "Cost Elements (data dependent on controlling area)
+    CSKU,            "Cost Elements Texts
+    CSKS,            "Cost Centre Master
+    CSKT.            "Cost Centre Texts
+
+DATA:
+    IN_OBJNR  LIKE COSP-OBJNR,         "Concatenated Holding Cost Centre
+    SUB1      LIKE COSP-WKG009,        "First Group Total
+    SUB2      LIKE SUB1,               "Second Group Total
+    SUB3      LIKE SUB1,               "Third Group Total
+    SUB4(6)   TYPE P DECIMALS 2,       "Fourth Group Total (Var.)
+    SUB5(6)   TYPE P DECIMALS 2,       "Fifth Group Total (Qty. Hrs.)
+    SUB6      LIKE SUB1,               "Sixth Group Total
+    SUB7      LIKE SUB1,               "Seventh Group Total
+    SUB8      LIKE SUB1,               "Eighth Group Total
+    SUB9      LIKE SUB4,               "Ninth Group Total
+    SUB10     LIKE SUB5,               "Tenth Group Total
+    SUB11     LIKE SUB1,               "Eleventh Group Total
+    SUB12     LIKE SUB1,               "Twelve Group Total
+    SUB13     LIKE SUB1,               "Thirteen Group Total
+    SUB14     LIKE SUB4,               "Fourteen Group Total
+    SUB15     LIKE SUB5,               "Fifteen Group Total
+    TOTAL1    LIKE COSP-WKG010,        "First Final Total
+    TOTAL2    LIKE TOTAL1,             "Second Final Total
+    TOTAL3    LIKE TOTAL1,             "Third Final Total
+    TOTAL4(6) TYPE P DECIMALS 2,       "Fourth Final Total
+    TOTAL5(7) TYPE P DECIMALS 2,       "Fifth Final Total
+    TOTAL6    LIKE TOTAL1,             "Sixth Final Total
+    TOTAL7    LIKE TOTAL1,             "Seventh Final Total
+    TOTAL8    LIKE TOTAL1,             "Eighth Final Total
+    TOTAL9    LIKE SUB4,               "Ninth Final Total
+    TOTAL10   LIKE SUB5,               "Tenth Final Total
+
+* Internal Table for Actual Costs. *
+  BEGIN OF ACT_CST OCCURS 500,
+    KSTAR     LIKE COSP-KSTAR,
+    WKG001    LIKE COSP-WKG001,
+    WKG002    LIKE COSP-WKG002,
+    WKG003    LIKE COSP-WKG003,
+    WKG004    LIKE COSP-WKG004,
+    WKG005    LIKE COSP-WKG005,
+    WKG006    LIKE COSP-WKG006,
+    WKG007    LIKE COSP-WKG007,
+    WKG008    LIKE COSP-WKG008,
+    WKG009    LIKE COSP-WKG009,
+    WKG010    LIKE COSP-WKG010,
+    WKG011    LIKE COSP-WKG011,
+    WKG012    LIKE COSP-WKG012,
+  END OF ACT_CST,
+
+* Internal Table for Plan Costs. *
+  BEGIN OF PLAN_CST OCCURS 500,
+    KSTAR     LIKE COSP-KSTAR,
+    WKG001    LIKE COSP-WKG001,
+    WKG002    LIKE COSP-WKG002,
+    WKG003    LIKE COSP-WKG003,
+    WKG004    LIKE COSP-WKG004,
+    WKG005    LIKE COSP-WKG005,
+    WKG006    LIKE COSP-WKG006,
+    WKG007    LIKE COSP-WKG007,
+    WKG008    LIKE COSP-WKG008,
+    WKG009    LIKE COSP-WKG009,
+    WKG010    LIKE COSP-WKG010,
+    WKG011    LIKE COSP-WKG011,
+    WKG012    LIKE COSP-WKG012,
+  END OF PLAN_CST,
+
+* Internal Table for Statistical Actual Costs. *
+  BEGIN OF STAT_ACT OCCURS 500,
+    KSTAR     LIKE COSP-KSTAR,
+    WKG001    LIKE COSP-WKG001,
+    WKG002    LIKE COSP-WKG002,
+    WKG003    LIKE COSP-WKG003,
+    WKG004    LIKE COSP-WKG004,
+    WKG005    LIKE COSP-WKG005,
+    WKG006    LIKE COSP-WKG006,
+    WKG007    LIKE COSP-WKG007,
+    WKG008    LIKE COSP-WKG008,
+    WKG009    LIKE COSP-WKG009,
+    WKG010    LIKE COSP-WKG010,
+    WKG011    LIKE COSP-WKG011,
+    WKG012    LIKE COSP-WKG012,
+  END OF STAT_ACT,
+
+* Internal Table for Total Costs - Internal Postings (Orders). *
+  BEGIN OF SETTLE OCCURS 500,
+     KSTAR    LIKE COSS-KSTAR,
+    WKG001    LIKE COSS-WKG001,
+    WKG002    LIKE COSS-WKG002,
+    WKG003    LIKE COSS-WKG003,
+    WKG004    LIKE COSS-WKG004,
+    WKG005    LIKE COSS-WKG005,
+    WKG006    LIKE COSS-WKG006,
+    WKG007    LIKE COSS-WKG007,
+    WKG008    LIKE COSS-WKG008,
+    WKG009    LIKE COSS-WKG009,
+    WKG010    LIKE COSS-WKG010,
+    WKG011    LIKE COSS-WKG011,
+    WKG012    LIKE COSS-WKG012,
+  END OF SETTLE,
+
+* Internal Table for Total Costs - Internal Postings PLAN (Orders). *
+  BEGIN OF SETTLE2 OCCURS 500,
+     KSTAR    LIKE COSS-KSTAR,
+    WKG001    LIKE COSS-WKG001,
+    WKG002    LIKE COSS-WKG002,
+    WKG003    LIKE COSS-WKG003,
+    WKG004    LIKE COSS-WKG004,
+    WKG005    LIKE COSS-WKG005,
+    WKG006    LIKE COSS-WKG006,
+    WKG007    LIKE COSS-WKG007,
+    WKG008    LIKE COSS-WKG008,
+    WKG009    LIKE COSS-WKG009,
+    WKG010    LIKE COSS-WKG010,
+    WKG011    LIKE COSS-WKG011,
+    WKG012    LIKE COSS-WKG012,
+  END OF SETTLE2,
+
+* Internal Table for Hours in BSEG. *
+  BEGIN OF ACCOUNT OCCURS 500,
+    TMPSTAR   LIKE COSS-KSTAR,
+    STAR      LIKE COSS-KSTAR,
+    MENGE(4)  TYPE P DECIMALS 2,
+  END OF ACCOUNT,
+
+* Internal Table for Settled Orders. *
+  BEGIN OF ORDERS OCCURS 500,
+    CENTRE    LIKE AUAA-KOSTL,
+    AREA      LIKE CSKS-KOKRS,
+    ELEMENT   LIKE CSKB-KSTAR,
+    AMT       LIKE AUAS-WKGBTR,
+  END OF ORDERS,
+
+* Internal Table for Actual Hours. *
+  BEGIN OF HRACT OCCURS 500,
+    KSTAR     LIKE COEP-KSTAR,
+    OBJNR     LIKE COEP-OBJNR,
+    WKGBTR    LIKE COEP-WKGBTR,
+    MBGBTR(3) TYPE P DECIMALS 2,
+    MEINB     LIKE BSEG-MEINS,
+   END OF HRACT,
+
+* Internal Table for Statistical Hours. *
+  BEGIN OF HRSTAT OCCURS 500,
+    KSTAR     LIKE COEP-KSTAR,
+    OBJNR     LIKE COEP-OBJNR,
+    WKGBTR    LIKE COEP-WKGBTR,
+    MBGBTR(3) TYPE P DECIMALS 2,
+    MEINB     LIKE BSEG-MEINS,
+   END OF HRSTAT,
+
+* Internal Table for Cost Centres. *
+  BEGIN OF CENTRE OCCURS 500,
+    BUKRS     LIKE CSKS-BUKRS,
+    KTEXT     LIKE CSKT-KTEXT,
+    VERAK     LIKE CSKS-VERAK,
+    DATBI     LIKE CSKS-DATBI,
+    KOKRS     LIKE CSKS-KOKRS,
+    OBJNR     LIKE COSP-OBJNR,
+    KOSTL     LIKE CSKS-KOSTL,
+  END OF CENTRE.
+
+************************************************************************
+
+* The following designs the user interface (screen). *
+SELECTION-SCREEN BEGIN OF BLOCK BOX1
+    WITH FRAME.
+
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN: COMMENT 28(25) TEXT-001 MODIF ID ABC.
+SELECTION-SCREEN END OF LINE.
+
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN ULINE  23(34).
+SELECTION-SCREEN END OF LINE.
+
+SELECTION-SCREEN SKIP.
+
+SELECTION-SCREEN BEGIN OF BLOCK
+    PERIOD WITH FRAME TITLE TEXT-003.
+
+SELECTION-SCREEN SKIP.
+
+SELECT-OPTIONS:
+   S_CENTRE FOR CSKB-KOSTL OBLIGATORY MODIF ID ABC,  "Cost Centre
+   S_ELEMNT FOR CSKB-KSTAR MODIF ID ABC.             "Cost Element
+SELECTION-SCREEN END OF BLOCK PERIOD.
+
+SELECTION-SCREEN SKIP.
+
+SELECTION-SCREEN BEGIN OF BLOCK PARAM
+          WITH FRAME TITLE TEXT-004.
+
+SELECTION-SCREEN SKIP.
+
+PARAMETERS:
+   P_FROM(2) TYPE N DEFAULT '1'                  MODIF ID ABC, "From
+   P_TO(2)   TYPE N DEFAULT '12'                 MODIF ID ABC, "To
+   P_AREA    LIKE CSKS-KOKRS DEFAULT '10'        MODIF ID ABC, "Control
+   P_YEAR    LIKE COSS-GJAHR DEFAULT SY-DATUM(4) MODIF ID ABC, "Fiscal
+   P_COMPNY  LIKE CSKS-BUKRS DEFAULT 'UGL'       MODIF ID ABC. "Company
+
+SELECTION-SCREEN END OF BLOCK PARAM.
+SELECTION-SCREEN END OF BLOCK BOX1.
+
+* The following will highlight the screen's output for certain texts. *
+AT SELECTION-SCREEN OUTPUT.
+  LOOP AT SCREEN.
+    CHECK SCREEN-GROUP1 = 'ABC'.
+    SCREEN-INTENSIFIED = '1'.
+    MODIFY SCREEN.
+  ENDLOOP.
+
+************************************************************************
+START-OF-SELECTION.
+ PERFORM CHK_INPUT.
+ PERFORM INITIALIZE.
+ LOOP AT CENTRE.
+   PERFORM REFRESH_RTN.
+   PERFORM GET_ORDERS.
+   PERFORM WRT_HDG.
+   PERFORM GET_ACTUALS.
+   PERFORM GET_PLAN.
+   PERFORM GET_ACTHRS.
+   PERFORM GET_STATHRS.
+   PERFORM GET_ORDHRS.
+   PERFORM PROC_ACT.
+   PERFORM PROC_ORDS.
+   PERFORM FIRST_TOTAL.
+   PERFORM WRT_COL2.
+   PERFORM PROC_STATACT.
+   PERFORM SECOND_TOTAL.
+   PERFORM CLEAR_RTN.
+ ENDLOOP.
+END-OF-SELECTION.
+************************************************************************
+
+* This routine will check for valid inputs. *
+FORM CHK_INPUT.
+ IF P_FROM > P_TO OR ( P_FROM = '0' OR P_TO = '0' ).
+    STOP.
+ ENDIF.
+ENDFORM.
+
+* This routine will set and store all appropriate variables. *
+FORM INITIALIZE.
+ SELECT * FROM CSKS WHERE KOSTL IN S_CENTRE
+        AND KOKRS = P_AREA AND BUKRS = P_COMPNY ORDER BY KOSTL.
+   SELECT SINGLE * FROM CSKT WHERE KOSTL = CSKS-KOSTL
+        AND KOKRS = CSKS-KOKRS AND SPRAS = 'E'
+        AND DATBI = CSKS-DATBI.
+        CONCATENATE: 'KS10' SPACE CSKS-KOSTL INTO IN_OBJNR
+                      SEPARATED BY SPACE.
+        PERFORM POP_CENTRE.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will populate all the info. for Cost Centres. *
+FORM POP_CENTRE.
+ CLEAR CENTRE.
+ MOVE: CSKS-KOSTL TO CENTRE-KOSTL,
+       CSKT-KTEXT TO CENTRE-KTEXT,
+       CSKS-VERAK TO CENTRE-VERAK,
+       CSKS-DATBI TO CENTRE-DATBI,
+       CSKS-BUKRS TO CENTRE-BUKRS,
+       IN_OBJNR   TO CENTRE-OBJNR.
+ APPEND CENTRE.
+ CLEAR IN_OBJNR.
+ENDFORM.
+
+* This routine refreshes all the headers for the following tables. *
+FORM REFRESH_RTN.
+ REFRESH: ACT_CST, PLAN_CST, ACCOUNT, SETTLE, SETTLE2,
+          ORDERS, STAT_ACT, HRACT, HRSTAT.
+ CLEAR:   ACT_CST, PLAN_CST, ACCOUNT, SETTLE, SETTLE2,
+          ORDERS, STAT_ACT, HRACT, HRSTAT.
+ENDFORM.
+
+* This routine will get appropriate info. for orders. *
+FORM GET_ORDERS.
+ SELECT * FROM CSKB WHERE KSTAR IN S_ELEMNT
+          AND KOKRS = CENTRE-KOKRS AND DATBI = CENTRE-DATBI
+          ORDER BY KSTAR.
+   SELECT  * FROM AUAA WHERE KOSTL = CENTRE-KOSTL
+             AND BUKRS = CENTRE-BUKRS.
+     SELECT * FROM AUAS WHERE KSTAR = CSKB-KSTAR
+              AND BELNR = AUAA-BELNR.
+              PERFORM POP_ORDERS.
+     ENDSELECT.
+   ENDSELECT.
+ ENDSELECT.
+ IF SY-SUBRC NE 0.
+    EXIT.
+ ENDIF.
+ENDFORM.
+
+* This routine will get all info. for actual cost. *
+FORM GET_ACTUALS.
+ SELECT * FROM COSP WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '04'
+           AND GJAHR = P_YEAR AND VERSN = '000'
+           AND KSTAR IN S_ELEMNT ORDER BY KSTAR.
+           PERFORM POP_COST1.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will get all info. for plan cost. *
+FORM GET_PLAN.
+ SELECT * FROM COSP WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '01'
+           AND GJAHR = P_YEAR AND VERSN = '000' AND KSTAR IN S_ELEMNT
+           ORDER BY KSTAR.
+           PERFORM POP_COST2.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will get actual hours. *
+FORM GET_ACTHRS.
+ SELECT * FROM COEP WHERE PERIO BETWEEN P_FROM AND P_TO
+          AND OBJNR = CENTRE-OBJNR "AND BUKRS = CENTRE-BUKRS
+          AND KSTAR IN S_ELEMNT "AND GJAHR = P_YEAR
+          AND WRTTP = '04' AND ( MEINB = 'H' OR MEINB = 'HR' )."SR960206
+          PERFORM POP_HRS1.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will get statistical hours. *
+FORM GET_STATHRS.
+ SELECT * FROM COEP WHERE PERIO BETWEEN P_FROM AND P_TO
+          AND OBJNR = CENTRE-OBJNR "AND BUKRS = CENTRE-BUKRS
+          AND KSTAR IN S_ELEMNT "AND GJAHR = P_YEAR
+          AND WRTTP = '11' AND ( MEINB = 'H' OR MEINB = 'HR' )."SR960206
+          PERFORM POP_HRS2.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will get hours for orders. *
+FORM GET_ORDHRS.
+ SELECT * FROM COSS WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '04'
+          AND GJAHR = P_YEAR AND VERSN = '000'
+          AND KSTAR IN S_ELEMNT ORDER BY KSTAR PAROB.
+   SELECT * FROM AUAA WHERE COOBJNR = COSS-PAROB
+            AND BUKRS = CENTRE-BUKRS.
+     SELECT * FROM BSIS WHERE AUFNR = AUAA-AUFNR
+              AND BUKRS = AUAA-BUKRS.
+       SELECT * FROM BSEG WHERE AUFNR = BSIS-AUFNR
+                AND BUKRS = BSIS-BUKRS AND BELNR = BSIS-BELNR
+                AND KOSTL = ' ' AND ( MEINS = 'H' OR MEINS = 'HR' ).
+                                                               "SR970206
+                PERFORM POP_HRS3.
+       ENDSELECT.
+     ENDSELECT.
+   ENDSELECT.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will conduct a control-break based on actual cost. *
+FORM PROC_ACT.
+ LOOP AT ACT_CST.
+   READ TABLE HRACT WITH KEY KSTAR = ACT_CST-KSTAR.
+   AT NEW KSTAR.
+      SUM.
+      ADD ACT_CST-WKG001 FROM P_FROM TO P_TO GIVING SUB1.
+      TOTAL1 = TOTAL1 + SUB1.
+      SELECT SINGLE * FROM CSKU WHERE KSTAR = ACT_CST-KSTAR
+               AND KTOPL = 'COAT' AND SPRAS = 'E'.
+      PERFORM VERTICAL1.
+      FORMAT COLOR 4 ON.
+        WRITE: /2 ACT_CST-KSTAR, 13 CSKU-KTEXT.
+      FORMAT COLOR 4 OFF.
+      FORMAT COLOR 2 ON INTENSIFIED OFF.
+        WRITE: 33 SUB1.
+      PERFORM LOOK_PLAN.
+      SUB3 = SUB1 - SUB2.
+      TOTAL3 = TOTAL3 + SUB3.
+      WRITE:  78 SUB3.
+      IF SUB2 NE 0.
+         COMPUTE: SUB4 = ( SUB3 / SUB2 ) * 100.
+         WRITE: 104 SUB4.
+      ENDIF.
+      IF HRACT-KSTAR = ACT_CST-KSTAR.
+         SUB5 = SUB5 + HRACT-MBGBTR.
+         TOTAL5 = TOTAL5 + SUB5.
+         WRITE: 119 SUB5.
+         FORMAT COLOR 2 OFF.
+      ENDIF.
+       CLEAR: SUB2, SUB8.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine will get info. for actual settled orders. *
+FORM PROC_ORDS.
+ SELECT * FROM COSS WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '04'
+          AND GJAHR = P_YEAR AND VERSN = '000'
+          AND KSTAR IN S_ELEMNT ORDER BY KSTAR.
+          PERFORM POP_SETTLE.
+ ENDSELECT.
+ PERFORM PROC_ORPLAN.
+ PERFORM LOOK_SETTLE.
+ENDFORM.
+
+* This routine will get info. for the plan settled orders. *
+FORM PROC_ORPLAN.
+ SELECT * FROM COSS WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '01'
+          AND GJAHR = P_YEAR AND VERSN = '000'
+          AND KSTAR IN S_ELEMNT ORDER BY KSTAR.
+          PERFORM POP_SETTLE2.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will write the first set of Final Totals. *
+FORM FIRST_TOTAL.
+ IF TOTAL2 NE 0.
+    COMPUTE: TOTAL4 = ( TOTAL3 / TOTAL2 ) * 100.
+ ENDIF.
+*TOTAL5 = SUB5 + SUB10.
+ PERFORM VERTICAL1.
+ ULINE: /1(132).
+ FORMAT COLOR 3 ON.
+  WRITE: /2 '*  Total', 33 TOTAL1, 54 TOTAL2, 78 TOTAL3, 104 TOTAL4,
+        117 TOTAL5.
+ FORMAT COLOR 3 OFF.
+ PERFORM VERTICAL1.
+ ULINE: /1(132).
+ENDFORM.
+
+* This routine will get all info. for statistical actual cost. *
+FORM PROC_STATACT.
+ SELECT * FROM COSP WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '11'
+          AND GJAHR = P_YEAR AND VERSN = '000'
+          AND KSTAR IN S_ELEMNT ORDER BY KSTAR.
+          PERFORM POP_STATS.
+ ENDSELECT.
+ PERFORM LOOK_STATS1.
+ENDFORM.
+
+* This routine will write the second Final Totals.
+FORM SECOND_TOTAL.
+ IF TOTAL7 NE 0.
+    COMPUTE: TOTAL9 = ( TOTAL8 / TOTAL7 ) * 100.
+ ENDIF.
+ PERFORM VERTICAL1.
+ ULINE: /1(132).
+ FORMAT COLOR 3 ON.
+  WRITE: /2 '*  Total', 33 TOTAL6, 54 TOTAL7, 78 TOTAL8, 104 TOTAL9,
+        119 TOTAL10.
+ FORMAT COLOR 3 OFF.
+ PERFORM VERTICAL1.
+ ULINE: /1(132).
+ FORMAT INTENSIFIED ON.
+ENDFORM.
+
+* This routine will populate all appropriate info. for orders. *
+FORM POP_ORDERS.
+ CLEAR ORDERS.
+ MOVE: CSKS-KOKRS  TO ORDERS-AREA,
+       CSKB-KSTAR  TO ORDERS-ELEMENT,
+       AUAS-WKGBTR TO ORDERS-AMT.
+ APPEND ORDERS.
+ENDFORM.
+
+* This routine will right the initial headings. *
+FORM WRT_HDG.
+ NEW-PAGE WITH-TITLE.
+ WRITE: /56 TEXT-001.
+ WRITE:  54 SY-VLINE, 81 SY-VLINE.
+ ULINE: /54(28).
+ ULINE: /1(21), 111(22).
+ WRITE: /3 TEXT-005, 16 P_YEAR, 112 TEXT-006, 128 P_COMPNY.
+ WRITE:  1 SY-VLINE, 21 SY-VLINE, 111 SY-VLINE, 132 SY-VLINE.
+ ULINE: /1(21), 111(22).
+ SKIP.
+ ULINE: /.
+ FORMAT INTENSIFIED OFF.
+ WRITE: /1 SY-VLINE, 48 SY-VLINE, 90 SY-VLINE, 132 SY-VLINE.
+ WRITE: /1 SY-VLINE, 132 SY-VLINE.
+ WRITE:  2 TEXT-007, 16 CENTRE-KOSTL, CENTRE-KTEXT, 48 SY-VLINE,
+        50 TEXT-008, 72 CENTRE-VERAK, 90 SY-VLINE, 93 TEXT-009,
+        111 P_FROM, P_YEAR, 120 'TO', 124 P_TO, P_YEAR.
+ WRITE: /1 SY-VLINE, 48 SY-VLINE, 90 SY-VLINE, 132 SY-VLINE.
+ ULINE: /.
+ FORMAT INTENSIFIED ON.
+ PERFORM WRT_COL1.
+ FORMAT INTENSIFIED OFF.
+ENDFORM.
+
+* This routine will populate all appropriate info. for Actual Cost. *
+FORM POP_COST1.
+ CLEAR ACT_CST.
+ MOVE: COSP-KSTAR  TO ACT_CST-KSTAR,
+       COSP-WKG001 TO ACT_CST-WKG001,
+       COSP-WKG002 TO ACT_CST-WKG002,
+       COSP-WKG003 TO ACT_CST-WKG003,
+       COSP-WKG004 TO ACT_CST-WKG004,
+       COSP-WKG005 TO ACT_CST-WKG005,
+       COSP-WKG006 TO ACT_CST-WKG006,
+       COSP-WKG007 TO ACT_CST-WKG007,
+       COSP-WKG008 TO ACT_CST-WKG008,
+       COSP-WKG009 TO ACT_CST-WKG009,
+       COSP-WKG010 TO ACT_CST-WKG010,
+       COSP-WKG011 TO ACT_CST-WKG011,
+       COSP-WKG012 TO ACT_CST-WKG012.
+ APPEND ACT_CST.
+ENDFORM.
+
+* This routine will populate all info. for Plan Cost. *
+FORM POP_COST2.
+ CLEAR PLAN_CST.
+ MOVE: COSP-KSTAR  TO PLAN_CST-KSTAR,
+       COSP-WKG001 TO PLAN_CST-WKG001,
+       COSP-WKG002 TO PLAN_CST-WKG002,
+       COSP-WKG003 TO PLAN_CST-WKG003,
+       COSP-WKG004 TO PLAN_CST-WKG004,
+       COSP-WKG005 TO PLAN_CST-WKG005,
+       COSP-WKG006 TO PLAN_CST-WKG006,
+       COSP-WKG007 TO PLAN_CST-WKG007,
+       COSP-WKG008 TO PLAN_CST-WKG008,
+       COSP-WKG009 TO PLAN_CST-WKG009,
+       COSP-WKG010 TO PLAN_CST-WKG010,
+       COSP-WKG011 TO PLAN_CST-WKG011,
+       COSP-WKG012 TO PLAN_CST-WKG012.
+ APPEND PLAN_CST.
+ENDFORM.
+
+* This routine will populate appropriate info. for Actual Hours. *
+FORM POP_HRS1.
+ CLEAR HRACT.
+ MOVE: COEP-KSTAR  TO HRACT-KSTAR,
+       COEP-OBJNR  TO HRACT-OBJNR,
+       COEP-WKGBTR TO HRACT-WKGBTR,
+       COEP-MBGBTR TO HRACT-MBGBTR,
+       COEP-MEINB  TO HRACT-MEINB.
+ APPEND HRACT.
+ENDFORM.
+
+* This routine will populate appropriate info. for Statistical Hours. *
+FORM POP_HRS2.
+ CLEAR HRSTAT.
+ MOVE: COEP-KSTAR  TO HRSTAT-KSTAR,
+       COEP-OBJNR  TO HRSTAT-OBJNR,
+       COEP-WKGBTR TO HRSTAT-WKGBTR,
+       COEP-MBGBTR TO HRSTAT-MBGBTR,
+       COEP-MEINB  TO HRSTAT-MEINB.
+ APPEND HRSTAT.
+ENDFORM.
+
+* This routine will populate appropriate info. for Acctg. Hours (BSEG).
+FORM POP_HRS3.
+ CLEAR ACCOUNT.
+ MOVE: BSEG-MENGE  TO ACCOUNT-MENGE,
+       COSS-KSTAR  TO ACCOUNT-TMPSTAR.
+ APPEND ACCOUNT.
+ENDFORM.
+
+* This control-break routine will break on plan cost. *
+FORM LOOK_PLAN.
+ SORT PLAN_CST BY KSTAR.
+ LOOP AT PLAN_CST.
+   AT NEW KSTAR.
+      SUM.
+      IF PLAN_CST-KSTAR = ACT_CST-KSTAR.
+         ADD PLAN_CST-WKG001 FROM P_FROM TO P_TO GIVING SUB2.
+         TOTAL2 = TOTAL2 + SUB2.
+         WRITE: 54 SUB2.
+      ENDIF.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine will populate appropriate info. for orders - actual. *
+FORM POP_SETTLE.
+ CLEAR SETTLE.
+ MOVE: COSS-KSTAR  TO SETTLE-KSTAR,
+       COSS-WKG001 TO SETTLE-WKG001,
+       COSS-WKG002 TO SETTLE-WKG002,
+       COSS-WKG003 TO SETTLE-WKG003,
+       COSS-WKG004 TO SETTLE-WKG004,
+       COSS-WKG005 TO SETTLE-WKG005,
+       COSS-WKG006 TO SETTLE-WKG006,
+       COSS-WKG007 TO SETTLE-WKG007,
+       COSS-WKG008 TO SETTLE-WKG008,
+       COSS-WKG009 TO SETTLE-WKG009,
+       COSS-WKG010 TO SETTLE-WKG010,
+       COSS-WKG011 TO SETTLE-WKG011,
+       COSS-WKG012 TO SETTLE-WKG012.
+ APPEND SETTLE.
+ENDFORM.
+
+
+* This routine will populate appropriate info. for orders - planned. *
+FORM POP_SETTLE2.
+ CLEAR SETTLE2.
+ MOVE: COSS-KSTAR  TO SETTLE2-KSTAR,
+       COSS-WKG001 TO SETTLE2-WKG001,
+       COSS-WKG002 TO SETTLE2-WKG002,
+       COSS-WKG003 TO SETTLE2-WKG003,
+       COSS-WKG004 TO SETTLE2-WKG004,
+       COSS-WKG005 TO SETTLE2-WKG005,
+       COSS-WKG006 TO SETTLE2-WKG006,
+       COSS-WKG007 TO SETTLE2-WKG007,
+       COSS-WKG008 TO SETTLE2-WKG008,
+       COSS-WKG009 TO SETTLE2-WKG009,
+       COSS-WKG010 TO SETTLE2-WKG010,
+       COSS-WKG011 TO SETTLE2-WKG011,
+       COSS-WKG012 TO SETTLE2-WKG012.
+ APPEND SETTLE2.
+ENDFORM.
+
+* This control-break routine will break on settled orders. *
+FORM LOOK_SETTLE.
+ LOOP AT SETTLE.
+   READ TABLE ACCOUNT WITH KEY TMPSTAR = SETTLE-KSTAR.
+   AT NEW KSTAR.
+      SUM.
+      ADD SETTLE-WKG001 FROM P_FROM TO P_TO GIVING SUB6.
+      TOTAL1 = TOTAL1 + SUB6.
+      SELECT SINGLE * FROM CSKU WHERE KSTAR = SETTLE-KSTAR
+                 AND KTOPL = 'COAT' AND SPRAS = 'E'.
+      PERFORM VERTICAL1.
+      FORMAT COLOR 4 ON.
+       WRITE: /2 SETTLE-KSTAR, 13 CSKU-KTEXT.
+      FORMAT COLOR 4 OFF.
+      FORMAT COLOR 2 ON.
+       WRITE: 33 SUB6.
+      PERFORM DET_PLAN.
+         SUB8 = SUB6 - SUB7.
+         TOTAL3 = TOTAL3 + SUB8.
+         WRITE: 78 SUB8.
+         IF SUB7 NE 0.
+            COMPUTE: SUB9 = ( SUB8 / SUB7 ) * 100.
+            WRITE: 104 SUB9.
+         ENDIF.
+       IF ACCOUNT-TMPSTAR = SETTLE-KSTAR.
+         SUB10 = SUB10 + ACCOUNT-MENGE.
+         TOTAL5 = TOTAL5 + SUB10.
+         WRITE: 119 SUB10.
+         FORMAT COLOR 2 OFF.
+      ENDIF.
+      CLEAR SUB7.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine will populate appropriate info. for statistical actual. *
+FORM POP_STATS.
+ CLEAR STAT_ACT.
+ MOVE: COSP-KSTAR  TO STAT_ACT-KSTAR,
+       COSP-WKG001 TO STAT_ACT-WKG001,
+       COSP-WKG002 TO STAT_ACT-WKG002,
+       COSP-WKG003 TO STAT_ACT-WKG003,
+       COSP-WKG004 TO STAT_ACT-WKG004,
+       COSP-WKG005 TO STAT_ACT-WKG005,
+       COSP-WKG006 TO STAT_ACT-WKG006,
+       COSP-WKG007 TO STAT_ACT-WKG007,
+       COSP-WKG008 TO STAT_ACT-WKG008,
+       COSP-WKG009 TO STAT_ACT-WKG009,
+       COSP-WKG010 TO STAT_ACT-WKG010,
+       COSP-WKG011 TO STAT_ACT-WKG011,
+       COSP-WKG012 TO STAT_ACT-WKG012.
+ APPEND STAT_ACT.
+ENDFORM.
+
+* This routine processess the details of the settled orders - PLAN. *
+FORM DET_PLAN.
+ SORT SETTLE2 BY KSTAR ASCENDING.
+ LOOP  AT SETTLE2.
+   AT NEW KSTAR.
+   SUM.
+   IF SETTLE2-KSTAR = SETTLE-KSTAR.
+      ADD SETTLE2-WKG001 FROM P_FROM TO P_TO GIVING SUB7.
+      TOTAL2 = TOTAL2 + SUB7.
+      WRITE: 54 SUB7.
+   ENDIF.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This control-break routine will break on Statistical actual. *
+FORM LOOK_STATS1.
+ LOOP AT STAT_ACT.
+   READ TABLE HRSTAT WITH KEY KSTAR = STAT_ACT-KSTAR.
+   AT NEW KSTAR.
+      SUM.
+      ADD STAT_ACT-WKG001 FROM P_FROM TO P_TO GIVING SUB11.
+      TOTAL6 = TOTAL6 + SUB11.
+      SELECT SINGLE * FROM CSKU WHERE KSTAR = STAT_ACT-KSTAR
+               AND KTOPL = 'COAT' AND SPRAS = 'E'.
+      PERFORM VERTICAL1.
+      FORMAT COLOR 4 ON.
+       WRITE: /2 STAT_ACT-KSTAR, 13 CSKU-KTEXT.
+      FORMAT COLOR 4 OFF.
+      FORMAT COLOR 2 ON.
+       WRITE: 33 SUB11.
+      SUB13 = SUB11 - SUB12.
+      TOTAL8 = SUB13 + TOTAL8.
+      WRITE: 78 SUB13.
+      IF SUB12 NE 0.
+         COMPUTE: SUB14 = ( SUB13 / SUB12 ) * 100.
+         WRITE: 100 SUB14.
+      ENDIF.
+      IF HRSTAT-KSTAR = STAT_ACT-KSTAR.
+         SUB15 = SUB15 + HRSTAT-MBGBTR.
+         TOTAL10 = TOTAL10 + SUB15.
+         WRITE: 119 SUB15.
+      ENDIF.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine writes vertical lines. *
+FORM VERTICAL1.
+ WRITE:  1 SY-VLINE, 33 SY-VLINE, 54 SY-VLINE, 75 SY-VLINE,
+       100 SY-VLINE, 117 SY-VLINE, 132 SY-VLINE.
+ENDFORM.
+
+* This routine writes the first column header. *
+FORM WRT_COL1.
+ FORMAT COLOR 6 ON INTENSIFIED OFF.
+ WRITE: /1 SY-VLINE, 10 TEXT-010, 38 TEXT-011, 60 TEXT-012,
+        83 TEXT-013, 105 TEXT-014, 119 TEXT-015.
+ PERFORM VERTICAL1.
+ ULINE: /.
+ FORMAT COLOR 6 OFF.
+ENDFORM.
+
+* This routine writes the second column header. *
+FORM WRT_COL2.
+ FORMAT COLOR 6 ON INTENSIFIED OFF.
+ SKIP.
+ ULINE: /1(132).
+ WRITE: /1 SY-VLINE, 7 TEXT-016, 38 TEXT-017, 60 TEXT-018,
+        83 TEXT-013, 105 TEXT-014, 119 TEXT-015.
+ PERFORM VERTICAL1.
+ ULINE: /.
+ FORMAT COLOR 6 OFF.
+ENDFORM.
+
+* This routine will clear/refresh the following variables. *
+FORM CLEAR_RTN.
+ CLEAR: SUB1, SUB2, SUB3, SUB4, SUB5, SUB6, SUB7, SUB8, SUB9, SUB10,
+        SUB11, SUB12, SUB13, SUB14, SUB15,
+        TOTAL1, TOTAL2, TOTAL3, TOTAL4, TOTAL5,
+        TOTAL6, TOTAL7, TOTAL8, TOTAL9, TOTAL10.
+ENDFORM.

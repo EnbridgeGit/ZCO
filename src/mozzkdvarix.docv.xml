@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DOCV" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DOC>
+    <HEAD>
+     <TDOBJECT>DOKU</TDOBJECT>
+     <TDNAME>ZZKDVARIX</TDNAME>
+     <TDID>MO</TDID>
+     <TDSPRAS>E</TDSPRAS>
+     <TDFORM>S_DOCU_SHOW</TDFORM>
+     <TDSTYLE>S_DOCUS1</TDSTYLE>
+     <TDVERSION>00001</TDVERSION>
+     <TDLINESIZE>072</TDLINESIZE>
+    </HEAD>
+    <LINES>
+     <TLINE>
+      <TDFORMAT>*</TDFORMAT>
+      <TDLINE>Use enhancement COOMEP01, user exit EXIT_SAPLKAEP_009, include</TDLINE>
+     </TLINE>
+     <TLINE>
+      <TDLINE>ZXKAEPU09 to protect global (system) variants (see notes 310293.6 and</TDLINE>
+     </TLINE>
+     <TLINE>
+      <TDLINE>331416.5).  Currently anyone can change any global variants.  This is</TDLINE>
+     </TLINE>
+     <TLINE>
+      <TDLINE>standard SAP functionality.  Using the enhancement we will restrict the</TDLINE>
+     </TLINE>
+     <TLINE>
+      <TDLINE>functionality to a select group.           Dennis Sartor 2000/12/28</TDLINE>
+     </TLINE>
+    </LINES>
+   </DOC>
+  </asx:values>
+ </asx:abap>
+</abapGit>

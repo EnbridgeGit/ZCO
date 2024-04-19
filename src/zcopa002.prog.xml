@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_PROG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROGDIR>
+    <NAME>ZCOPA002</NAME>
+    <SUBC>1</SUBC>
+    <APPL>S</APPL>
+    <RLOAD>E</RLOAD>
+    <FIXPT>X</FIXPT>
+   </PROGDIR>
+   <TPOOL>
+    <item>
+     <ID>I</ID>
+     <KEY>EX1</KEY>
+     <ENTRY>Without extract</ENTRY>
+     <LENGTH>50</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>EX2</KEY>
+     <ENTRY>Name of extract</ENTRY>
+     <LENGTH>29</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>EX3</KEY>
+     <ENTRY>Save</ENTRY>
+     <LENGTH>50</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>EX4</KEY>
+     <ENTRY>Read</ENTRY>
+     <LENGTH>29</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>EX5</KEY>
+     <ENTRY>Extract name</ENTRY>
+     <LENGTH>29</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>EXT</KEY>
+     <ENTRY>Processing control for extracts</ENTRY>
+     <LENGTH>50</LENGTH>
+    </item>
+    <item>
+     <ID>R</ID>
+     <ENTRY>ZCOPA002: Month-end Revenue Reporting Download</ENTRY>
+     <LENGTH>46</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_BUKRS</KEY>
+     <ENTRY>Company Code</ENTRY>
+     <LENGTH>20</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_EX1</KEY>
+     <ENTRY>Extract</ENTRY>
+     <LENGTH>15</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_EX2</KEY>
+     <ENTRY>Extract</ENTRY>
+     <LENGTH>15</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_EXT1</KEY>
+     <ENTRY>Extract name</ENTRY>
+     <LENGTH>33</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_KOKRS</KEY>
+     <ENTRY>Controlling Area</ENTRY>
+     <LENGTH>24</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_LOAD</KEY>
+     <ENTRY>Read extract</ENTRY>
+     <LENGTH>21</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_NOEX</KEY>
+     <ENTRY>Without extract</ENTRY>
+     <LENGTH>23</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_PALGR</KEY>
+     <ENTRY>Currency Type</ENTRY>
+     <LENGTH>21</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_PLIKZ</KEY>
+     <ENTRY>Plan/Act. Indicator</ENTRY>
+     <LENGTH>27</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_SAVE</KEY>
+     <ENTRY>Save extract</ENTRY>
+     <LENGTH>23</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>S_PERIO</KEY>
+     <ENTRY>Period</ENTRY>
+     <LENGTH>14</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>S_PRDHA</KEY>
+     <ENTRY>Product Hierarchy</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>S_VKORG</KEY>
+     <ENTRY>Sales Organization</ENTRY>
+     <LENGTH>26</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>S_VRGAR</KEY>
+     <ENTRY>Record Type</ENTRY>
+     <LENGTH>19</LENGTH>
+    </item>
+   </TPOOL>
+   <I18N_TPOOL>
+    <item>
+     <LANGUAGE>D</LANGUAGE>
+     <TEXTPOOL>
+      <item>
+       <ID>I</ID>
+       <KEY>EX1</KEY>
+       <ENTRY>Ohne Extrakt</ENTRY>
+       <LENGTH>50</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>EX2</KEY>
+       <ENTRY>Name des Extraktes</ENTRY>
+       <LENGTH>29</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>EX3</KEY>
+       <ENTRY>Sichern</ENTRY>
+       <LENGTH>50</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>EX4</KEY>
+       <ENTRY>Lesen</ENTRY>
+       <LENGTH>29</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>EX5</KEY>
+       <ENTRY>Bezeichnung des Extraktes</ENTRY>
+       <LENGTH>29</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>EXT</KEY>
+       <ENTRY>Ablaufsteuerung Extrakte</ENTRY>
+       <LENGTH>50</LENGTH>
+      </item>
+      <item>
+       <ID>R</ID>
+       <ENTRY>Demoprogramm ALV: Ausgabe Flüge (einfachste Version)</ENTRY>
+       <LENGTH>52</LENGTH>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>CARRID</KEY>
+       <ENTRY>Fluggesellschaft</ENTRY>
+       <LENGTH>24</LENGTH>
+       <SPLIT>D</SPLIT>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>CONNID</KEY>
+       <ENTRY>Verbindungs-Nummer</ENTRY>
+       <LENGTH>26</LENGTH>
+       <SPLIT>D</SPLIT>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>FLDATE</KEY>
+       <ENTRY>Datum des Fluges</ENTRY>
+       <LENGTH>24</LENGTH>
+       <SPLIT>D</SPLIT>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>P_EX1</KEY>
+       <ENTRY>Extrakt</ENTRY>
+       <LENGTH>15</LENGTH>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>P_EX2</KEY>
+       <ENTRY>Extrakt</ENTRY>
+       <LENGTH>15</LENGTH>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>P_EXT1</KEY>
+       <ENTRY>Bezeichnung des Extraktes</ENTRY>
+       <LENGTH>33</LENGTH>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>P_LOAD</KEY>
+       <ENTRY>Extrakt lesen</ENTRY>
+       <LENGTH>21</LENGTH>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>P_NOEX</KEY>
+       <ENTRY>Ohne Extrakt</ENTRY>
+       <LENGTH>20</LENGTH>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>P_SAVE</KEY>
+       <ENTRY>Extrakt sichern</ENTRY>
+       <LENGTH>23</LENGTH>
+      </item>
+     </TEXTPOOL>
+    </item>
+   </I18N_TPOOL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

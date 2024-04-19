@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>Z_LIBCN</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>CHAR13</DOMNAME>
+    <HEADLEN>13</HEADLEN>
+    <SCRLEN1>09</SCRLEN1>
+    <SCRLEN2>16</SCRLEN2>
+    <SCRLEN3>19</SCRLEN3>
+    <DDTEXT>Centra LIB Customer Number</DDTEXT>
+    <REPTEXT>LIB Cust.</REPTEXT>
+    <SCRTEXT_S>LIB Cust.</SCRTEXT_S>
+    <SCRTEXT_M>LIB Customer No.</SCRTEXT_M>
+    <SCRTEXT_L>LIB Customer Number</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,736 @@
+REPORT ZKAPR002 LINE-SIZE 132 LINE-COUNT 59.
+********************************************************************
+*      Owner: Centra/Union Gas Ltd. - BIS                          *
+* Programmer: Yaxin Veliz - OmniLogic Systems Group (Toronto)      *
+*       Date: October 29th, 1996                                   *
+* Request ID: DRFI0089                                             *
+*                                                                  *
+* The following program will generate a Labor Distribution Report  *
+* that will produce earnings and hours for O&M and CAPITAL.        *
+********************************************************************
+
+TABLES:
+    AUAA,            "Settlement Document: Receiver Segment
+    AUAS,            "Settlement Document: Totals Segment
+    AUFK,            "Order Master
+    BSEG,            "Accounting Document Segment
+    BSIS,            "Accounting: Secondary Index for G/L Accounts
+    COEP,            "CO Object: Period-Related Line Items
+    COSP,            "CO Object: Cost Totals - External Postings
+    COSS,            "CO Object: Cost Totals - Internal Postings
+    CSKB,            "Cost Elements (data dependent on controlling area)
+    CSKU,            "Cost Elements Texts
+    CSKS,            "Cost Centre Master
+    CSKT,            "Cost Centre Texts
+    PRPS.            "WBS Element Master Data
+
+DATA:
+    IN_OBJNR  LIKE COSP-OBJNR,         "Concatenated Holding Cost Centre
+    SUB1      LIKE COSP-WKG001,        "First Earnings O&M
+    SUB2      LIKE SUB1,               "Second Earnings CAPITAL
+    SUB3(3)   TYPE P DECIMALS 2,       "First Hrs. O&M %
+    SUB4      LIKE SUB3,               "Second Hrs. CAP %
+    SUB5(4)   TYPE P DECIMALS 2,       "First Hrs. Total Qty.
+    SUB6      LIKE SUB5,               "Second Hrs. Total Qty.
+    SUB7      LIKE SUB3,               "First  Hrs. O&M%
+    SUB8      LIKE SUB3,               "Second Hrs. CAP%
+    SUB9      LIKE SUB1,               "Third Earnings O&M
+    SUB10     LIKE SUB1,               "Fourth Earnings CAPITAL
+    SUB11     LIKE SUB3,               "Third Hrs. O&M%
+    SUB12     LIKE SUB3,               "Fourth Hrs. CAPITAL%
+    SUB13     LIKE SUB5,               "Third Hrs. Total Qty.
+    SUB14     LIKE SUB5,               "Fourth Hrs. Total Qty.
+    SUB15     LIKE SUB3,               "Third Hrs. O&M%
+    SUB16     LIKE SUB3,               "Fourth Hrs. CAPITAL%
+    TOTAL1(9) TYPE P DECIMALS 2,       "First Total - O&M Earnings
+    TOTAL2    LIKE TOTAL1,             "Second Total - Capital Earnings
+    TOTAL3(3) TYPE P DECIMALS 2,       "Third Total - O&M% Earnings
+    TOTAL4    LIKE TOTAL3,             "Fourth Total - Cap. % Earnings
+    TOTAL5(5) TYPE P DECIMALS 2,       "Fifth Total - O&M Hours
+    TOTAL6    LIKE TOTAL5,             "Sixth Total - Capital Hours
+    TOTAL7    LIKE TOTAL3,             "Seventh Total - O&M % Hrs.
+    TOTAL8    LIKE TOTAL3,             "Eighth Total - Cap. % Hrs.
+    GRTOT1(9) TYPE P DECIMALS 2,       "Grand total for TOTAL1
+    GRTOT2    LIKE GRTOT1,             "Grand total for TOTAL2
+    GRTOT3(4) TYPE P DECIMALS 2,       "Grand total for TOTAL3
+    GRTOT4    LIKE GRTOT3,             "Grand total for TOTAL4
+    GRTOT5(5) TYPE P DECIMALS 2,       "Grand total for TOTAL5
+    GRTOT6    LIKE GRTOT5,             "Grand total for TOTAL6
+    GRTOT7    LIKE GRTOT3,             "Grand total for TOTAL7
+    GRTOT8    LIKE GRTOT3,             "Grand total for TOTAL8
+
+* Internal Table for Actual Costs. *
+  BEGIN OF ACT_CST OCCURS 500,
+    KSTAR     LIKE COSP-KSTAR,
+    WKG001    LIKE COSP-WKG001,
+    WKG002    LIKE COSP-WKG002,
+    WKG003    LIKE COSP-WKG003,
+    WKG004    LIKE COSP-WKG004,
+    WKG005    LIKE COSP-WKG005,
+    WKG006    LIKE COSP-WKG006,
+    WKG007    LIKE COSP-WKG007,
+    WKG008    LIKE COSP-WKG008,
+    WKG009    LIKE COSP-WKG009,
+    WKG010    LIKE COSP-WKG010,
+    WKG011    LIKE COSP-WKG011,
+    WKG012    LIKE COSP-WKG012,
+  END OF ACT_CST,
+
+* Internal Table for Total Costs - Internal Postings (Orders). *
+  BEGIN OF SETTLE OCCURS 500,
+     KSTAR    LIKE COSS-KSTAR,
+    WKG001    LIKE COSS-WKG001,
+    WKG002    LIKE COSS-WKG002,
+    WKG003    LIKE COSS-WKG003,
+    WKG004    LIKE COSS-WKG004,
+    WKG005    LIKE COSS-WKG005,
+    WKG006    LIKE COSS-WKG006,
+    WKG007    LIKE COSS-WKG007,
+    WKG008    LIKE COSS-WKG008,
+    WKG009    LIKE COSS-WKG009,
+    WKG010    LIKE COSS-WKG010,
+    WKG011    LIKE COSS-WKG011,
+    WKG012    LIKE COSS-WKG012,
+  END OF SETTLE,
+
+* Internal Table for Hours in BSEG. *
+  BEGIN OF ACCOUNT OCCURS 500,
+    TMPSTAR   LIKE COSS-KSTAR,
+    STAR      LIKE COSS-KSTAR,
+    MENGE(4)  TYPE P DECIMALS 2,
+  END OF ACCOUNT,
+
+* Internal Table for Settled Orders. *
+  BEGIN OF ORDERS OCCURS 500,
+    CENTRE    LIKE AUAA-KOSTL,
+    AREA      LIKE CSKS-KOKRS,
+    ELEMENT   LIKE CSKB-KSTAR,
+    AMT       LIKE AUAS-WKGBTR,
+  END OF ORDERS,
+
+* Internal Table for Actual Hours. *
+  BEGIN OF HRACT OCCURS 500,
+    KSTAR     LIKE COEP-KSTAR,
+    OBJNR     LIKE COEP-OBJNR,
+    WKGBTR    LIKE COEP-WKGBTR,
+    MBGBTR(3) TYPE P DECIMALS 2,
+    MEINB     LIKE BSEG-MEINS,
+   END OF HRACT,
+
+* Internal Table for Cost Centres. *
+  BEGIN OF CENTRE OCCURS 500,
+    BUKRS     LIKE CSKS-BUKRS,
+    KTEXT     LIKE CSKT-KTEXT,
+    VERAK     LIKE CSKS-VERAK,
+    DATBI     LIKE CSKS-DATBI,
+    KOKRS     LIKE CSKS-KOKRS,
+    OBJNR     LIKE COSP-OBJNR,
+    KOSTL     LIKE CSKS-KOSTL,
+  END OF CENTRE,
+
+* Internal Table for WBS Element - Planned. *
+  BEGIN OF WTAB OCCURS 500,
+    FKSTL  LIKE PRPS-FKSTL,
+    KSTAR  LIKE COSP-KSTAR,
+    MBGBTR LIKE COEP-MBGBTR,
+    WKG001 LIKE COSP-WKG001,
+    WKG002 LIKE COSP-WKG002,
+    WKG003 LIKE COSP-WKG003,
+    WKG004 LIKE COSP-WKG004,
+    WKG005 LIKE COSP-WKG005,
+    WKG006 LIKE COSP-WKG006,
+    WKG007 LIKE COSP-WKG007,
+    WKG008 LIKE COSP-WKG008,
+    WKG009 LIKE COSP-WKG009,
+    WKG010 LIKE COSP-WKG010,
+    WKG011 LIKE COSP-WKG011,
+    WKG012 LIKE COSP-WKG012,
+   END OF WTAB,
+
+* Internal table for WBS element actual cost and hrs, - settled orders *
+   BEGIN OF WBS OCCURS 500,
+      KSTAR LIKE COSS-KSTAR,
+      MENGE(4)  TYPE P DECIMALS 2,
+      WKG001 LIKE COSS-WKG001,
+      WKG002 LIKE COSS-WKG002,
+      WKG003 LIKE COSS-WKG003,
+      WKG004 LIKE COSS-WKG004,
+      WKG005 LIKE COSS-WKG005,
+      WKG006 LIKE COSS-WKG006,
+      WKG007 LIKE COSS-WKG007,
+      WKG008 LIKE COSS-WKG008,
+      WKG009 LIKE COSS-WKG009,
+      WKG010 LIKE COSS-WKG010,
+      WKG011 LIKE COSS-WKG011,
+      WKG012 LIKE COSS-WKG012,
+   END OF WBS.
+
+************************************************************************
+
+* The following designs the user interface (screen). *
+SELECTION-SCREEN BEGIN OF BLOCK BOX1
+    WITH FRAME.
+
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN: COMMENT 28(25) TEXT-001 MODIF ID ABC.
+SELECTION-SCREEN END OF LINE.
+
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN ULINE  23(34).
+SELECTION-SCREEN END OF LINE.
+
+SELECTION-SCREEN SKIP.
+
+SELECTION-SCREEN BEGIN OF BLOCK
+    PERIOD WITH FRAME TITLE TEXT-003.
+
+SELECTION-SCREEN SKIP.
+
+SELECT-OPTIONS:
+   S_CENTRE FOR CSKB-KOSTL OBLIGATORY MODIF ID ABC,  "Cost Centre
+   S_ELEMNT FOR CSKB-KSTAR MODIF ID ABC.             "Cost Element
+SELECTION-SCREEN END OF BLOCK PERIOD.
+
+SELECTION-SCREEN SKIP.
+
+SELECTION-SCREEN BEGIN OF BLOCK PARAM
+          WITH FRAME TITLE TEXT-004.
+
+SELECTION-SCREEN SKIP.
+
+PARAMETERS:
+   P_FROM(2) TYPE N DEFAULT '1'                  MODIF ID ABC, "From
+   P_TO(2)   TYPE N DEFAULT '12'                 MODIF ID ABC, "To
+   P_AREA    LIKE CSKS-KOKRS DEFAULT '10'        MODIF ID ABC, "Control
+   P_YEAR    LIKE COSS-GJAHR DEFAULT SY-DATUM(4) MODIF ID ABC, "Fiscal
+   P_COMPNY  LIKE CSKS-BUKRS DEFAULT 'UGL'       MODIF ID ABC. "Company
+
+SELECTION-SCREEN END OF BLOCK PARAM.
+SELECTION-SCREEN END OF BLOCK BOX1.
+
+* The following will highlight the screen's output for certain texts. *
+AT SELECTION-SCREEN OUTPUT.
+  LOOP AT SCREEN.
+    CHECK SCREEN-GROUP1 = 'ABC'.
+    SCREEN-INTENSIFIED = '1'.
+    MODIFY SCREEN.
+  ENDLOOP.
+
+************************************************************************
+START-OF-SELECTION.
+ PERFORM CHK_INPUT.
+ PERFORM INITIALIZE.
+ LOOP AT CENTRE.
+   PERFORM REFRESH_RTN.
+   PERFORM GET_ORDERS.
+   PERFORM WRT_HDG.
+   PERFORM GET_ACTUALS.
+   PERFORM GET_WBSACT.
+   PERFORM GET_ACTHRS.
+   PERFORM GET_WBS.
+   PERFORM GET_ORDHRS.
+   PERFORM PROC_ACT.
+   PERFORM PROC_ORDS.
+   PERFORM FIRST_TOTAL.
+   PERFORM CLEAR_RTN.
+ ENDLOOP.
+ PERFORM GRD_TOTALS.
+END-OF-SELECTION.
+************************************************************************
+
+* This routine will check for valid inputs. *
+FORM CHK_INPUT.
+ IF P_FROM > P_TO OR ( P_FROM = '0' OR P_TO = '0' ).
+    STOP.
+ ENDIF.
+ENDFORM.
+
+* This routine will set and store all appropriate variables. *
+FORM INITIALIZE.
+ SELECT * FROM CSKS WHERE KOSTL IN S_CENTRE
+        AND KOKRS = P_AREA AND BUKRS = P_COMPNY ORDER BY KOSTL.
+   SELECT SINGLE * FROM CSKT WHERE KOSTL = CSKS-KOSTL
+        AND KOKRS = CSKS-KOKRS AND SPRAS = 'E'
+        AND DATBI = CSKS-DATBI.
+        CONCATENATE: 'KS10' SPACE CSKS-KOSTL INTO IN_OBJNR
+                      SEPARATED BY SPACE.
+        PERFORM POP_CENTRE.
+ ENDSELECT.
+ENDFORM.
+
+* This routine refreshes all the headers for the following tables. *
+FORM REFRESH_RTN.
+ REFRESH: ACT_CST, ACCOUNT, SETTLE,
+          ORDERS, HRACT, WBS, WTAB.
+ CLEAR:   ACT_CST, ACCOUNT, SETTLE,
+          ORDERS, HRACT, WBS, WTAB.
+ENDFORM.
+
+* This routine will get appropriate info. for orders. *
+FORM GET_ORDERS.
+ SELECT * FROM CSKB WHERE KSTAR IN S_ELEMNT
+          AND KOKRS = CENTRE-KOKRS AND DATBI = CENTRE-DATBI
+          ORDER BY KSTAR.
+   SELECT  * FROM AUAA WHERE KOSTL = CENTRE-KOSTL
+             AND BUKRS = CENTRE-BUKRS.
+     SELECT * FROM AUAS WHERE KSTAR = CSKB-KSTAR
+              AND BELNR = AUAA-BELNR.
+              PERFORM POP_ORDERS.
+     ENDSELECT.
+   ENDSELECT.
+ ENDSELECT.
+ IF SY-SUBRC NE 0.
+    EXIT.
+ ENDIF.
+ENDFORM.
+
+* This routine will right the initial headings. *
+FORM WRT_HDG.
+ NEW-PAGE WITH-TITLE.
+ WRITE: /56 TEXT-001.
+ WRITE:  54 SY-VLINE, 82 SY-VLINE.
+ ULINE: /54(29).
+ ULINE: /1(21), 111(22).
+ WRITE: /3 TEXT-005, 16 P_YEAR, 112 TEXT-006, 128 P_COMPNY.
+ WRITE:  1 SY-VLINE, 21 SY-VLINE, 111 SY-VLINE, 132 SY-VLINE.
+ ULINE: /1(21), 111(22).
+ SKIP.
+ ULINE: /.
+ FORMAT INTENSIFIED OFF.
+ WRITE: /1 SY-VLINE, 48 SY-VLINE, 90 SY-VLINE, 132 SY-VLINE.
+ WRITE: /1 SY-VLINE, 132 SY-VLINE.
+ WRITE:  2 TEXT-007, 16 CENTRE-KOSTL, CENTRE-KTEXT, 48 SY-VLINE,
+        50 TEXT-008, 72 CENTRE-VERAK, 90 SY-VLINE, 93 TEXT-009,
+        111 P_FROM, P_YEAR, 120 'TO', 124 P_TO, P_YEAR.
+ WRITE: /1 SY-VLINE, 48 SY-VLINE, 90 SY-VLINE, 132 SY-VLINE.
+ ULINE: /.
+ FORMAT INTENSIFIED ON.
+ PERFORM WRT_COL1.
+ FORMAT INTENSIFIED OFF.
+ENDFORM.
+
+* This routine will get all info. for actual cost. *
+FORM GET_ACTUALS.
+ SELECT * FROM COSP WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '04'
+           AND GJAHR = P_YEAR AND VERSN = '000'
+           AND KSTAR IN S_ELEMNT ORDER BY KSTAR.
+           PERFORM POP_COST1.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will get actual cost and hours for Capital. *
+FORM GET_WBSACT.
+ SELECT * FROM PRPS WHERE FKSTL = CENTRE-KOSTL.
+   SELECT * FROM COSS WHERE OBJNR = PRPS-OBJNR.
+     SELECT * FROM AUFK WHERE OBJNR = COSS-PAROB.
+       SELECT * FROM BSIS WHERE AUFNR = AUFK-AUFNR
+               AND BUKRS = CENTRE-BUKRS AND GJAHR = P_YEAR.
+         SELECT * FROM BSEG WHERE BELNR = BSIS-BELNR
+                   AND BUKRS = BSIS-BUKRS AND BUZEI = BSIS-BUZEI
+                   AND GJAHR = BSIS-GJAHR.
+                   PERFORM POP_WBSACT.
+                   MOVE COSS-KSTAR TO SETTLE-KSTAR.
+                   APPEND SETTLE.
+         ENDSELECT.
+       ENDSELECT.
+     ENDSELECT.
+   ENDSELECT.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will get actual hours. *
+FORM GET_ACTHRS.
+ SELECT * FROM COEP WHERE PERIO BETWEEN P_FROM AND P_TO
+          AND OBJNR = CENTRE-OBJNR "AND BUKRS = CENTRE-BUKRS
+          AND KSTAR IN S_ELEMNT "AND GJAHR = P_YEAR
+          AND WRTTP = '04' AND ( MEINB = 'H' OR MEINB = 'STD' ).
+          PERFORM POP_HRS1.
+ ENDSELECT.
+ENDFORM.
+
+* This routine looks for hours/amounts posted to a WBS element. *
+FORM GET_WBS.
+ SELECT * FROM PRPS WHERE FKSTL = CENTRE-KOSTL
+         AND PBUKR = CENTRE-BUKRS.
+   SELECT * FROM COSP WHERE OBJNR = PRPS-OBJNR
+           AND GJAHR = P_YEAR AND WRTTP = '04' ORDER BY KSTAR.
+           CLEAR: ACT_CST.
+           MOVE: COSP-KSTAR TO ACT_CST-KSTAR.
+           APPEND ACT_CST.
+     SELECT * FROM COEP WHERE OBJNR = COSP-OBJNR
+             AND WRTTP = COSP-WRTTP AND GJAHR = COSP-GJAHR
+             AND KSTAR = COSP-KSTAR.
+             PERFORM POP_WBS.
+     ENDSELECT.
+   ENDSELECT.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will get hours for orders. *
+FORM GET_ORDHRS.
+ SELECT * FROM COSS WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '04'
+          AND GJAHR = P_YEAR AND VERSN = '000'
+          AND KSTAR IN S_ELEMNT ORDER BY KSTAR PAROB.
+   SELECT * FROM AUFK WHERE OBJNR = COSS-PAROB
+            AND BUKRS = CENTRE-BUKRS.
+     SELECT * FROM BSIS WHERE AUFNR = AUFK-AUFNR
+              AND BUKRS = AUFK-BUKRS.
+       SELECT * FROM BSEG WHERE AUFNR = BSIS-AUFNR
+                AND BUKRS = BSIS-BUKRS AND BELNR = BSIS-BELNR
+                AND KOSTL = ' ' AND ( MEINS = 'H' OR MEINS = 'STD' ).
+                PERFORM POP_HRS3.
+       ENDSELECT.
+     ENDSELECT.
+   ENDSELECT.
+ ENDSELECT.
+ENDFORM.
+
+* This routine will conduct a control-break based on actual cost. *
+FORM PROC_ACT.
+ SORT ACT_CST BY KSTAR.
+ LOOP AT ACT_CST.
+   READ TABLE HRACT WITH KEY KSTAR = ACT_CST-KSTAR.
+   AT NEW KSTAR.
+      SUM.
+      ADD ACT_CST-WKG001 FROM P_FROM TO P_TO GIVING SUB1.
+      TOTAL1 = TOTAL1 + SUB1.
+      SELECT SINGLE * FROM CSKU WHERE KSTAR = ACT_CST-KSTAR
+               AND KTOPL = 'COAT' AND SPRAS = 'E'.
+      PERFORM VERTICAL1.
+      FORMAT COLOR 4 ON.
+        WRITE: /2 ACT_CST-KSTAR, 13 CSKU-KTEXT.
+      FORMAT COLOR 4 OFF.
+      FORMAT COLOR 2 ON INTENSIFIED OFF.
+        WRITE: 33 SUB1.
+      PERFORM LOOK_PLAN.
+      COMPUTE SUB4 = SUB2 / ( SUB1 + SUB2 ) * 100.
+      WRITE: 87 SUB4.
+      COMPUTE SUB3 = SUB1 / ( SUB1 + SUB2 ) * 100.
+      WRITE: 78 SUB3.
+      IF HRACT-KSTAR = ACT_CST-KSTAR.
+         LOOP AT HRACT.
+          AT END OF KSTAR.
+             SUM.
+             IF HRACT-KSTAR = ACT_CST-KSTAR.
+                SUB5 = SUB5 + HRACT-MBGBTR.
+             ENDIF.
+          ENDAT.
+         ENDLOOP.
+*        SUB5 = SUB5 + HRACT-MBGBTR.
+         TOTAL5 = TOTAL5 + SUB5.
+         WRITE: 95 SUB5.
+      ENDIF.
+      COMPUTE SUB7 = SUB5 / ( SUB5 + SUB6 ) * 100.
+      WRITE: 118 SUB7.
+      COMPUTE SUB8 = SUB6 / ( SUB5 + SUB6 ) * 100.
+      WRITE: 126 SUB8.
+      CLEAR: SUB2, SUB3, SUB4, SUB5, SUB6, SUB7, SUB8.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine will get info. for actual settled orders. *
+FORM PROC_ORDS.
+ SELECT * FROM COSS WHERE OBJNR = CENTRE-OBJNR AND WRTTP = '04'
+          AND GJAHR = P_YEAR AND VERSN = '000'
+          AND KSTAR IN S_ELEMNT ORDER BY KSTAR.
+          PERFORM POP_SETTLE.
+ ENDSELECT.
+ PERFORM LOOK_SETTLE.
+ENDFORM.
+
+* This routine will write the first set of Final Totals. *
+FORM FIRST_TOTAL.
+ PERFORM CAL_PERCENT.
+ PERFORM ACCUMULATE.
+ PERFORM VERTICAL1.
+ ULINE: /1(132).
+ FORMAT COLOR 3 ON.
+  WRITE: /2 '*  Total', 35 TOTAL1, 56 TOTAL2, 78 TOTAL3,
+         87 TOTAL4, 93 TOTAL5, 104 TOTAL6, 118 TOTAL7,
+        126 TOTAL8.
+ FORMAT COLOR 3 OFF.
+ PERFORM VERTICAL1.
+ ULINE: /1(132).
+ FORMAT INTENSIFIED ON.
+ENDFORM.
+
+* This routine will clear/refresh the following variables. *
+FORM CLEAR_RTN.
+ CLEAR: SUB1, SUB2, SUB5, SUB9, SUB13,
+        TOTAL1, TOTAL2, TOTAL6, TOTAL5.
+ENDFORM.
+
+* This routine writes the final totals. *
+FORM GRD_TOTALS.
+ PERFORM CAL_GRDPER.
+ ULINE: /1(132).
+ FORMAT COLOR 3 ON INTENSIFIED OFF.
+ WRITE: /1 SY-VLINE, 2 '** Grand  Total',35 GRTOT1,56 GRTOT2,76 GRTOT3,
+        85 GRTOT4, 93 GRTOT5, 104 GRTOT6,
+       116 GRTOT7, 124 GRTOT8, 132 SY-VLINE.
+ ULINE /1(132).
+ENDFORM.
+
+* This routine gets the hours from the WBS element table. *
+FORM WBS_HRS.
+SELECT * FROM PRPS WHERE FKSTL = CENTRE-KOSTL
+         AND PBUKR = CENTRE-BUKRS.
+  SELECT * FROM COEP WHERE OBJNR = PRPS-OBJNR
+           AND WRTTP = '04'.
+   WRITE: /1 'ACTUAL HOURS'.
+   WRITE: /1 PRPS-FKSTL, PRPS-PBUKR, COEP-OBJNR, COEP-WRTTP,
+            COEP-MBGBTR, COEP-WKGBTR, COEP-KSTAR.
+   ENDSELECT.
+ENDSELECT.
+ENDFORM.
+
+* This control-break routine will break on plan cost. *
+FORM LOOK_PLAN.
+ SORT WTAB BY KSTAR.
+ LOOP AT WTAB.
+   AT NEW KSTAR.
+      SUM.
+      IF WTAB-KSTAR = ACT_CST-KSTAR.
+         ADD WTAB-WKG001 FROM P_FROM TO P_TO GIVING SUB2.
+         TOTAL2 = TOTAL2 + SUB2.
+         WRITE: 54 SUB2.
+         SUB6 = SUB6 + WTAB-MBGBTR.
+         TOTAL6 = TOTAL6 + SUB6.
+         WRITE: 106 SUB6.
+      ENDIF.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This control-break routine will break on settled orders. *
+FORM LOOK_SETTLE.
+ SORT SETTLE BY KSTAR.
+ LOOP AT SETTLE.
+   AT NEW KSTAR.
+      SUM.
+      ADD SETTLE-WKG001 FROM P_FROM TO P_TO GIVING SUB9.
+      TOTAL1 = TOTAL1 + SUB9.
+      SELECT SINGLE * FROM CSKU WHERE KSTAR = SETTLE-KSTAR
+                 AND KTOPL = 'COAT' AND SPRAS = 'E'.
+      PERFORM VERTICAL1.
+      FORMAT COLOR 4 ON.
+      WRITE: /2 SETTLE-KSTAR, 13 CSKU-KTEXT.
+      FORMAT COLOR 4 OFF.
+      FORMAT COLOR 2 ON.
+      WRITE: 33 SUB9.
+      PERFORM DET_WBSACT.
+      PERFORM DET_HRS.
+      COMPUTE SUB11 = SUB9 / ( SUB9 + SUB10 ) * 100.
+      WRITE: 78 SUB11.
+      COMPUTE SUB12 = SUB10 / ( SUB9 + SUB10 ) * 100.
+      WRITE: 87 SUB12.
+      COMPUTE SUB15 = SUB13 / ( SUB13 + SUB14 ) * 100.
+      WRITE: 118 SUB15.
+      COMPUTE SUB16 = SUB14 / ( SUB13 + SUB14 ) * 100.
+      WRITE: 126 SUB16.
+      CLEAR: SUB13, SUB14.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine processess the details of the settled orders - PLAN. *
+FORM DET_WBSACT.
+ SORT WBS BY KSTAR.
+ LOOP AT WBS.
+   AT NEW KSTAR.
+   SUM.
+   IF WBS-KSTAR = SETTLE-KSTAR.
+      ADD WBS-WKG001 FROM P_FROM TO P_TO GIVING SUB10.
+      TOTAL2 = TOTAL2 + SUB10.
+      WRITE: 54 SUB10.
+      SUB14 = SUB14 + WBS-MENGE.
+      TOTAL6 = TOTAL6 + SUB14.
+      WRITE:   106 SUB14.
+   ENDIF.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine processess the details of the settled orders - PLAN. *
+FORM DET_HRS.
+ LOOP  AT ACCOUNT.
+   AT NEW TMPSTAR.
+   SUM.
+   IF ACCOUNT-TMPSTAR = SETTLE-KSTAR.
+      SUB13 = SUB13 + ACCOUNT-MENGE.
+      TOTAL5 = TOTAL5 + SUB13.
+      WRITE: 95 SUB13.
+   ENDIF.
+   ENDAT.
+ ENDLOOP.
+ENDFORM.
+
+* This routine will calculate the percentage for the totals. *
+FORM CAL_PERCENT.
+ COMPUTE TOTAL3 = TOTAL1 / ( TOTAL1 + TOTAL2 ) * 100.
+ COMPUTE TOTAL4 = TOTAL2 / ( TOTAL1 + TOTAL2 ) * 100.
+ COMPUTE TOTAL7 = TOTAL5 / ( TOTAL5 + TOTAL6 ) * 100.
+ COMPUTE TOTAL8 = TOTAL6 / ( TOTAL5 + TOTAL6 ) * 100.
+ENDFORM.
+
+* This routine will accumulate the Totals to the Final totals. *
+FORM ACCUMULATE.
+ GRTOT1 = GRTOT1 + TOTAL1.
+ GRTOT2 = GRTOT2 + TOTAL2.
+ GRTOT3 = GRTOT3 + TOTAL3.
+ GRTOT4 = GRTOT4 + TOTAL4.
+ GRTOT5 = GRTOT5 + TOTAL5.
+ GRTOT6 = GRTOT6 + TOTAL6.
+ GRTOT7 = GRTOT7 + TOTAL7.
+ GRTOT8 = GRTOT8 + TOTAL8.
+ENDFORM.
+
+* This routine will cal the percentage of the Final Totals. *
+FORM CAL_GRDPER.
+ COMPUTE GRTOT3 = GRTOT1 / ( GRTOT1 + GRTOT2 ) * 100.
+ COMPUTE GRTOT4 = GRTOT2 / ( GRTOT1 + GRTOT2 ) * 100.
+ COMPUTE GRTOT7 = GRTOT5 / ( GRTOT5 + GRTOT6 ) * 100.
+ COMPUTE GRTOT8 = GRTOT6 / ( GRTOT5 + GRTOT6 ) * 100.
+ENDFORM.
+
+* This routine will populate all the info. for Cost Centres. *
+FORM POP_CENTRE.
+ CLEAR CENTRE.
+ MOVE: CSKS-KOSTL TO CENTRE-KOSTL,
+       CSKT-KTEXT TO CENTRE-KTEXT,
+       CSKS-VERAK TO CENTRE-VERAK,
+       CSKS-DATBI TO CENTRE-DATBI,
+       CSKS-BUKRS TO CENTRE-BUKRS,
+       IN_OBJNR   TO CENTRE-OBJNR.
+ APPEND CENTRE.
+ CLEAR IN_OBJNR.
+ENDFORM.
+
+* This routine will populate all appropriate info. for orders. *
+FORM POP_ORDERS.
+ CLEAR ORDERS.
+ MOVE: CSKS-KOKRS  TO ORDERS-AREA,
+       CSKB-KSTAR  TO ORDERS-ELEMENT,
+       AUAS-WKGBTR TO ORDERS-AMT.
+ APPEND ORDERS.
+ENDFORM.
+
+* This routine will populate all appropriate info. for Actual Cost. *
+FORM POP_COST1.
+ CLEAR ACT_CST.
+ MOVE: COSP-KSTAR  TO ACT_CST-KSTAR,
+       COSP-WKG001 TO ACT_CST-WKG001,
+       COSP-WKG002 TO ACT_CST-WKG002,
+       COSP-WKG003 TO ACT_CST-WKG003,
+       COSP-WKG004 TO ACT_CST-WKG004,
+       COSP-WKG005 TO ACT_CST-WKG005,
+       COSP-WKG006 TO ACT_CST-WKG006,
+       COSP-WKG007 TO ACT_CST-WKG007,
+       COSP-WKG008 TO ACT_CST-WKG008,
+       COSP-WKG009 TO ACT_CST-WKG009,
+       COSP-WKG010 TO ACT_CST-WKG010,
+       COSP-WKG011 TO ACT_CST-WKG011,
+       COSP-WKG012 TO ACT_CST-WKG012.
+ APPEND ACT_CST.
+ENDFORM.
+
+* This routine will populate appropriate info. for Actual Hours. *
+FORM POP_HRS1.
+ CLEAR HRACT.
+ MOVE: COEP-KSTAR  TO HRACT-KSTAR,
+       COEP-OBJNR  TO HRACT-OBJNR,
+       COEP-WKGBTR TO HRACT-WKGBTR,
+       COEP-MBGBTR TO HRACT-MBGBTR,
+       COEP-MEINB  TO HRACT-MEINB.
+ APPEND HRACT.
+ENDFORM.
+
+* This routine will populate appropriate info. for Acctg. Hours (BSEG).
+FORM POP_HRS3.
+ CLEAR ACCOUNT.
+ MOVE: BSEG-MENGE  TO ACCOUNT-MENGE,
+       COSS-KSTAR  TO ACCOUNT-TMPSTAR.
+ APPEND ACCOUNT.
+ENDFORM.
+
+* This routine will populate appropriate info. for orders - actual. *
+FORM POP_SETTLE.
+ CLEAR SETTLE.
+ MOVE: COSS-KSTAR  TO SETTLE-KSTAR,
+       COSS-WKG001 TO SETTLE-WKG001,
+       COSS-WKG002 TO SETTLE-WKG002,
+       COSS-WKG003 TO SETTLE-WKG003,
+       COSS-WKG004 TO SETTLE-WKG004,
+       COSS-WKG005 TO SETTLE-WKG005,
+       COSS-WKG006 TO SETTLE-WKG006,
+       COSS-WKG007 TO SETTLE-WKG007,
+       COSS-WKG008 TO SETTLE-WKG008,
+       COSS-WKG009 TO SETTLE-WKG009,
+       COSS-WKG010 TO SETTLE-WKG010,
+       COSS-WKG011 TO SETTLE-WKG011,
+       COSS-WKG012 TO SETTLE-WKG012.
+ APPEND SETTLE.
+ENDFORM.
+
+* This routine populates the data of the WBS element. *
+FORM POP_WBS.
+ CLEAR: WTAB.
+ MOVE:  COSP-KSTAR  TO WTAB-KSTAR,
+        PRPS-FKSTL  TO WTAB-FKSTL,
+        COEP-MBGBTR TO WTAB-MBGBTR,
+        COSP-WKG001 TO WTAB-WKG001,
+        COSP-WKG002 TO WTAB-WKG002,
+        COSP-WKG003 TO WTAB-WKG003,
+        COSP-WKG004 TO WTAB-WKG004,
+        COSP-WKG005 TO WTAB-WKG005,
+        COSP-WKG006 TO WTAB-WKG006,
+        COSP-WKG007 TO WTAB-WKG007,
+        COSP-WKG008 TO WTAB-WKG008,
+        COSP-WKG009 TO WTAB-WKG009,
+        COSP-WKG010 TO WTAB-WKG010,
+        COSP-WKG011 TO WTAB-WKG011,
+        COSP-WKG012 TO WTAB-WKG012.
+  APPEND WTAB.
+ENDFORM.
+
+* This routine will populate all info. for the WBS actual hours. *
+FORM POP_WBSACT.
+ CLEAR: WBS.
+ MOVE: COSS-KSTAR TO WBS-KSTAR,
+       BSEG-MENGE TO WBS-MENGE,
+       COSS-WKG001 TO WBS-WKG001,
+       COSS-WKG002 TO WBS-WKG002,
+       COSS-WKG003 TO WBS-WKG003,
+       COSS-WKG004 TO WBS-WKG004,
+       COSS-WKG005 TO WBS-WKG005,
+       COSS-WKG006 TO WBS-WKG006,
+       COSS-WKG007 TO WBS-WKG007,
+       COSS-WKG008 TO WBS-WKG008,
+       COSS-WKG009 TO WBS-WKG009,
+       COSS-WKG010 TO WBS-WKG010,
+       COSS-WKG011 TO WBS-WKG011,
+       COSS-WKG012 TO WBS-WKG012.
+ APPEND WBS.
+ENDFORM.
+
+* This routine writes the first column header. *
+FORM WRT_COL1.
+ WRITE: /1 SY-VLINE, 33 SY-VLINE, 55 TEXT-015, 93 SY-VLINE,
+       109 TEXT-016, 132 SY-VLINE.
+ ULINE: /1(132).
+ FORMAT COLOR 6 ON INTENSIFIED OFF.
+ WRITE: /1 SY-VLINE, 10 TEXT-010, 42 TEXT-011, 62 TEXT-012,
+           79 TEXT-013, 87 TEXT-014,
+        96 TEXT-011, 107 TEXT-012, 119 TEXT-013, 127 TEXT-014.
+ PERFORM VERTICAL1.
+ ULINE: /.
+ FORMAT COLOR 6 OFF.
+ENDFORM.
+
+* This routine writes vertical lines. *
+FORM VERTICAL1.
+ WRITE:  1 SY-VLINE, 33 SY-VLINE, 54 SY-VLINE, 75 SY-VLINE, 84 SY-VLINE,
+        93 SY-VLINE,
+       104 SY-VLINE, 115 SY-VLINE, 124 SY-VLINE, 132 SY-VLINE.
+ENDFORM.

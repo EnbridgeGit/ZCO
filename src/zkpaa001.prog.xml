@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_PROG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROGDIR>
+    <NAME>ZKPAA001</NAME>
+    <SUBC>1</SUBC>
+    <APPL>K</APPL>
+    <RLOAD>E</RLOAD>
+    <FIXPT>X</FIXPT>
+    <LDBNAME>D$S</LDBNAME>
+   </PROGDIR>
+   <TPOOL>
+    <item>
+     <ID>R</ID>
+     <ENTRY>Assignment of FI revenue postings to profitability segments in COPA.</ENTRY>
+     <LENGTH>68</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>LGCLFILE</KEY>
+     <ENTRY>Logical File</ENTRY>
+     <LENGTH>20</LENGTH>
+    </item>
+   </TPOOL>
+   <LONGTEXTS>
+    <item>
+     <DOKIL>
+      <ID>RE</ID>
+      <OBJECT>ZKPAA001</OBJECT>
+      <LANGU>E</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0001</VERSION>
+      <MASTERLANG>X</MASTERLANG>
+      <TXTLINES>00014</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZKPAA001</TDNAME>
+      <TDID>RE</TDID>
+      <TDSPRAS>E</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00001</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DESCRIPTION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>The purpose of this program is to assign revenue postings to CCA and</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>CO-PA via G/L postings.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;PRECONDITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>A logical file must be defined for the input/output file.  These are</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>created in transaction &lt;DS:TRAN.FILE&gt;FILE&lt;/&gt;.  If you do not have</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>access to this you can view all logical files in transaction</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>&lt;DS:TRAN.SE16&gt;SE16&lt;/&gt; with table FILENAMECI.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;OUTPUT&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>A BDC session is created and then can be processed with transaction</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>&lt;DS:TRAN.SM35&gt;SM35&lt;/&gt;.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;Z_SELEC_SCREEN_PARAM&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B1</TDFORMAT>
+       <TDLINE>Logical File</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>BL</TDFORMAT>
+       <TDLINE>- The logical file is checked if it is valid and if the physical file</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>exists and is readable.  This occurs during selection screen processing</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>so the user is able to re-enter the logical file if there is an error</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>without having to re-execute the program.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;FURTHER_SOURCES_OF_INF&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>see documentation for &lt;DS:RE.RFBIBL00&gt;RFBIBL00&lt;/&gt;.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+   </LONGTEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

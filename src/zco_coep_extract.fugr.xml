@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_FUGR" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <AREAT>COEP Extract</AREAT>
+   <INCLUDES>
+    <SOBJ_NAME>LZCO_COEP_EXTRACTTOP</SOBJ_NAME>
+    <SOBJ_NAME>SAPLZCO_COEP_EXTRACT</SOBJ_NAME>
+   </INCLUDES>
+   <FUNCTIONS>
+    <item>
+     <FUNCNAME>Z_COEP_EXTRACT</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <SHORT_TEXT>COEP Extract</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>QUERY_TABLE</PARAMETER>
+       <TYP>DD02L-TABNAME</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>DELIMITER</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>SONV-FLAG</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>NO_DATA</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>SONV-FLAG</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>ROWSKIPS</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>SOID-ACCNT</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>ROWCOUNT</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>SOID-ACCNT</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>OUT_TABLE</PARAMETER>
+       <TYP>COEP</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>OPTIONS</PARAMETER>
+       <DBSTRUCT>/SAPDS/RFC_DB_OPT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>FIELDS</PARAMETER>
+       <DBSTRUCT>RFC_DB_FLD</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>OUT_TABLE1</PARAMETER>
+       <DBSTRUCT>COEP</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>TBLOUT128</PARAMETER>
+       <DBSTRUCT>/SAPDS/TAB128</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>TBLOUT512</PARAMETER>
+       <DBSTRUCT>/SAPDS/TAB512</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>TBLOUT2048</PARAMETER>
+       <DBSTRUCT>/SAPDS/TAB2048</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>TBLOUT8192</PARAMETER>
+       <DBSTRUCT>/SAPDS/TAB8192</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>TBLOUT30000</PARAMETER>
+       <DBSTRUCT>/SAPDS/TAB30K</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <EXCEPTION>
+      <RSEXC>
+       <EXCEPTION>TABLE_NOT_AVAILABLE</EXCEPTION>
+      </RSEXC>
+      <RSEXC>
+       <EXCEPTION>TABLE_WITHOUT_DATA</EXCEPTION>
+      </RSEXC>
+      <RSEXC>
+       <EXCEPTION>OPTION_NOT_VALID</EXCEPTION>
+      </RSEXC>
+      <RSEXC>
+       <EXCEPTION>FIELD_NOT_VALID</EXCEPTION>
+      </RSEXC>
+      <RSEXC>
+       <EXCEPTION>NOT_AUTHORIZEC</EXCEPTION>
+      </RSEXC>
+      <RSEXC>
+       <EXCEPTION>DATA_BUFFER_EXCEEDED</EXCEPTION>
+      </RSEXC>
+     </EXCEPTION>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>QUERY_TABLE</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Table Name</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>DELIMITER</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Text field length 1</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>NO_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Text field length 1</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>ROWSKIPS</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>SAPoffice: Type I</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>ROWCOUNT</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>SAPoffice: Type I</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>OUT_TABLE</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Table Name</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>OPTIONS</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>RFC Table Read: Select Options / WHERE Clause(Data Services)</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>FIELDS</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>RFC Table Read: Description of Fields to Retrieve</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>OUT_TABLE1</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>CO Object: Line Items (by Period)</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>TBLOUT128</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>DataServices: Table with 128 char field</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>TBLOUT512</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>DataServices: Table with 512 chars</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>TBLOUT2048</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>DataServices: Table with 2048 chars</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>TBLOUT8192</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>DataServices: Table with 8192 chars</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>TBLOUT30000</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>DataServices: Table with 30000 chars</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>TABLE_NOT_AVAILABLE</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>Invalid Table</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>TABLE_WITHOUT_DATA</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>No data found</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>OPTION_NOT_VALID</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>Invalid Option</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>FIELD_NOT_VALID</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>Invalid Field</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>NOT_AUTHORIZEC</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>No Authorization</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>DATA_BUFFER_EXCEEDED</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>Data Buffer exceeded</STEXT>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+   </FUNCTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

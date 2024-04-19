@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_PROG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROGDIR>
+    <NAME>ZYVAM002</NAME>
+    <SUBC>1</SUBC>
+    <APPL>S</APPL>
+    <RLOAD>E</RLOAD>
+    <FIXPT>X</FIXPT>
+    <LDBNAME>D$S</LDBNAME>
+   </PROGDIR>
+   <TPOOL>
+    <item>
+     <ID>S</ID>
+     <KEY>P_FILE</KEY>
+     <ENTRY>Initial file name</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_TESTRN</KEY>
+     <ENTRY>Testrun</ENTRY>
+     <LENGTH>15</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_TVNAME</KEY>
+     <ENTRY>TVARV variable name</ENTRY>
+     <LENGTH>27</LENGTH>
+    </item>
+    <item>
+     <ID>R</ID>
+     <ENTRY>Maintain TVARV variables for RKEVEXT0</ENTRY>
+     <LENGTH>37</LENGTH>
+    </item>
+   </TPOOL>
+   <LONGTEXTS>
+    <item>
+     <DOKIL>
+      <ID>RE</ID>
+      <OBJECT>ZYVAM002</OBJECT>
+      <LANGU>E</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0002</VERSION>
+      <MASTERLANG>X</MASTERLANG>
+      <TXTLINES>00022</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZYVAM002</TDNAME>
+      <TDID>RE</TDID>
+      <TDSPRAS>E</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00002</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DESCRIPTION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE> This program updates TVARV variables to be used by another ABAP</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>&lt;DS:RE.RKEVEXT0&gt;RKEVEXT0&lt;/&gt;.  This variable represents a physical file</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>which is to be used by RKEVEXT0.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;PRECONDITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B1</TDFORMAT>
+       <TDLINE>The TVARV variable name specified as a parameter for this program must</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>already exist!  You can create it in transaction &lt;DS:TRAN.SM31&gt;SM31&lt;/&gt;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>and then specify TVARV as the table name.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B1</TDFORMAT>
+       <TDLINE>The correct sequence of events must run in order as follows:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>ER</TDFORMAT>
+       <TDLINE>1. Input file exists on SAP server</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>ER</TDFORMAT>
+       <TDLINE>2. Input file is run through unix script &quot;copaunique&quot;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>ER</TDFORMAT>
+       <TDLINE>3. This ABAP runs with the proper TVARV parameter</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>ER</TDFORMAT>
+       <TDLINE>4. RKEVEXT0 runs with the proper variant</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B1</TDFORMAT>
+       <TDLINE>The unix script &quot;copaunique&quot; and this ABAP must always run the same</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>number of times.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;OUTPUT&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>The TVARV variable is updated with the current value of the input file</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>to be used by &lt;DS:RE.RKEVEXT0&gt;RKEVEXT0&lt;/&gt;.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;Z_SELEC_SCREEN_PARAM&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B1</TDFORMAT>
+       <TDLINE>TVARV variable name</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>BL</TDFORMAT>
+       <TDLINE>- This is the TVARV variable which contains the unique file name.  It</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>must already exist!</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B1</TDFORMAT>
+       <TDLINE>Initial File Name</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>BL</TDFORMAT>
+       <TDLINE>- The initial name of the file (do not include any date stamp).</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B1</TDFORMAT>
+       <TDLINE>Test Run</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>BL</TDFORMAT>
+       <TDLINE>- If this is selected the update to the TVARV variable does not occur.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+   </LONGTEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>
